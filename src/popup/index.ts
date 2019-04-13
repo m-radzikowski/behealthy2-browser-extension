@@ -26,7 +26,7 @@ export class LoadingIndicator {
 
 	start() {
 		this.render();
-		this.intervalHandle = setInterval(() => this.render(), 5000);
+		this.intervalHandle = setInterval(() => this.render(), 1000);
 	}
 
 	private render(): void {
