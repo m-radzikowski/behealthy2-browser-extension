@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import flatten from 'lodash/flatten';
+import {env} from './env';
 
 export class Scrapper {
 
@@ -28,35 +29,39 @@ export class Scrapper {
 		'p',
 		'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
 		'blockquote',
+		'#gazeta_article_lead', // wiadomosci.gazeta.pl
+		'.article--lead', // wiadomosci.wp.pl
 	];
 
 	private readonly minTextLength = 1000;
 
-	getPageText() {
+	getPageText(): string | null {
 		console.log('Scrapping for page content');
 
 		const textSelector = this.textSelectors.join(', ');
 
-		let text;
-
 		const pageContentElements = this.getPageContentElements();
 		for (const pageContentElement of pageContentElements) {
-			console.log('ELEMENT', pageContentElement);
+			console.log('Parsing element', pageContentElement);
 
 			const textElements = $(pageContentElement).find(textSelector);
-			text = textElements.text();
+			let text = textElements
+				.each(function () {
+					// add space to every element (paragraph etc.) to have a separator between joined text from two adjacent elements
+					$(this).append(' ');
+				})
+				.text();
 			text = this.cleanText(text);
 
 			console.log(`Text from "${pageContentElement}" selector`, $(pageContentElement), text);
 
 			if (this.verifyText(text)) {
-				break;
-			} else {
-				text = '';
+				this.highlightScrappedText(textElements);
+				return text;
 			}
 		}
 
-		console.log('Final text', text);
+		return null;
 	}
 
 	/**
@@ -72,8 +77,6 @@ export class Scrapper {
 		);
 
 		return flatten(elements);
-
-		// return flatten(elements);
 	}
 
 	private cleanText(text: string) {
@@ -85,5 +88,11 @@ export class Scrapper {
 	 */
 	private verifyText(text: string) {
 		return text.length > this.minTextLength;
+	}
+
+	private highlightScrappedText(elements: JQuery<HTMLElement>) {
+		if (env.debug) {
+			elements.addClass('behealthy-highlight');
+		}
 	}
 }
