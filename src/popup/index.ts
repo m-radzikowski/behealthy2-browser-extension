@@ -8,7 +8,15 @@ export class LoadingIndicator {
 	private startTime: number;
 	private intervalHandle: number;
 	private gaugeStroke = 20;
-	private colorsSet: string[] = ['#FD200D', '#FF7300', '#FEB101', '#F3EE01', '#ABD900', '#ABD900', '#01A800'];
+	private colorsSet: string[] = [
+		'#FD200D',
+		'#FF7300',
+		'#FEB101',
+		'#F3EE01',
+		'#ABD900',
+		'#ABD900',
+		'#01A800'
+		];
 
 	constructor() {
 		const canvasElem = <HTMLCanvasElement>document.getElementById('mood-gauge');
@@ -32,10 +40,10 @@ export class LoadingIndicator {
 		this.context.textAlign = 'center';
 		this.context.textBaseline = 'middle';
 		this.context.fillStyle = 'black';
-
 		this.context.restore();
-		const randomNumber = (Math.random() * 200) - 100;
-		this.drawGuage(randomNumber);
+		let value: number = parseInt(localStorage.getItem('value'), 10);
+		value = !value || value > 100 || value < -100 ? 0 : value;
+		this.drawGuage(value);
 	}
 
 	drawGuage(value: number): void {
