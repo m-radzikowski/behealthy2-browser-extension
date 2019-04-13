@@ -18,11 +18,13 @@ class DashboardIcon {
 	}
 
 	start() {
-		this.intervalHandle = setInterval(() => this.render(), 1000);
+		this.render();
+		this.intervalHandle = setInterval(() => this.render(), 10000);
 	}
 
 	private render(): void {
 		this.value = (Math.random() * 200) - 100; // to be taken from api
+		window.localStorage.setItem('mood', this.value.toString());
 		const color: string = this.getColor();
 		this.context.save();
 		this.context.clearRect(0, 0, this.size, this.size);

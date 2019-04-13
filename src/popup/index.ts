@@ -5,7 +5,6 @@ export class LoadingIndicator {
 	private readonly context: CanvasRenderingContext2D;
 	private readonly width: number;
 	private readonly height: number;
-	private startTime: number;
 	private intervalHandle: number;
 	private gaugeStroke = 20;
 	private colorsSet: string[] = [
@@ -26,8 +25,8 @@ export class LoadingIndicator {
 	}
 
 	start() {
-		this.startTime = new Date().getTime();
-		this.intervalHandle = setInterval(() => this.render(), 1000);
+		this.render();
+		this.intervalHandle = setInterval(() => this.render(), 5000);
 	}
 
 	private render(): void {
@@ -37,7 +36,10 @@ export class LoadingIndicator {
 		this.context.textBaseline = 'middle';
 		this.context.fillStyle = 'black';
 		this.context.restore();
-		let value: number = parseInt(localStorage.getItem('value'), 10);
+		// chrome.storage.sync.get(['mood'], (result) => {
+		// 	console.log('Value currently is ' + result);
+		// });
+		let value = parseInt(window.localStorage.getItem('mood'), 10);
 		value = !value || value > 100 || value < -100 ? 0 : value;
 		this.drawGuage(value);
 	}
