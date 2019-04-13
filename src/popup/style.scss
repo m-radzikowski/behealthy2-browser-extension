@@ -25,7 +25,7 @@ a {
 	}
 }
 
-#last-pages {
+ul {
 	margin-top: 5px;
 	padding: 0 10px 0 20px;
 
@@ -46,12 +46,12 @@ a {
 		top: 1em;
 		position: relative;
 	}
+}
 
-	.score-positive {
-		color: #0a0;
-	}
+.score-positive {
+	color: #0a0;
+}
 
-	.score-negative {
-		color: #a00;
-	}
+.score-negative {
+	color: #a00;
 }
