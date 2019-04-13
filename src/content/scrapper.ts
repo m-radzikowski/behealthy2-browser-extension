@@ -83,7 +83,9 @@ export class Scrapper {
 	}
 
 	private cleanText(text: string) {
-		return text.replace(/\s\s+/g, ' ');
+		return text
+			.replace(/\s\s+/g, ' ')
+			.replace(/[^0-9a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ .,;!?()]/g, '');
 	}
 
 	/**
