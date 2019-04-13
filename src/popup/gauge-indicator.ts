@@ -3,7 +3,6 @@ export class GaugeIndicator {
 	private readonly context: CanvasRenderingContext2D;
 	private readonly width: number;
 	private readonly height: number;
-	private intervalHandle: number;
 	private gaugeStroke = 20;
 	private colorsSet: string[] = [
 		'#FD200D',
@@ -23,7 +22,12 @@ export class GaugeIndicator {
 
 	start() {
 		this.render();
-		this.intervalHandle = setInterval(() => this.render(), 1000);
+
+		chrome.runtime.onMessage.addListener(message => {
+			if (message.action === 'new-value') {
+				this.render();
+			}
+		});
 	}
 
 	private render(): void {
