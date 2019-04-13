@@ -15,6 +15,14 @@ chrome.runtime.onMessage.addListener(message => {
 		case 'start-recording':
 			const video = document.getElementsByTagName('video')[0];
 			audioRecorder = new SplittingAudioRecorder(video);
+			audioRecorder.setBlobListener(blob => {
+				const fileReader = new FileReader();
+				fileReader.readAsDataURL(blob);
+				fileReader.onloadend = () => {
+					const base64data = fileReader.result;
+					chrome.runtime.sendMessage({'audio': base64data});
+				};
+			});
 			audioRecorder.start();
 			break;
 		case 'stop-recording':

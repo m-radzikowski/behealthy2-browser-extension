@@ -6,6 +6,7 @@ export class SimpleAudioRecorder implements AudioRecorder {
 
 	private mediaRecorder;
 	private chunks = [];
+	private blobListener: (b: Blob) => void;
 
 	constructor(
 		private element: HTMLVideoElement,
@@ -51,9 +52,11 @@ export class SimpleAudioRecorder implements AudioRecorder {
 		const blob = new Blob(this.chunks, {
 			type: 'audio/webm',
 		});
-		console.log(blob);
+		console.log('Recorded blob', blob);
 
-		// TODO Return blob
+		if (this.blobListener) {
+			this.blobListener(blob);
+		}
 
 		// const url = window.URL.createObjectURL(blob);
 		// const a = document.createElement('a');
@@ -69,5 +72,9 @@ export class SimpleAudioRecorder implements AudioRecorder {
 
 	private onError(e) {
 		console.log('Media Recorder error', e);
+	}
+
+	setBlobListener(fn: (b: Blob) => void) {
+		this.blobListener = fn;
 	}
 }

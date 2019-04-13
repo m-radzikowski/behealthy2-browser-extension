@@ -22,15 +22,17 @@ class Dashboard {
 
 	private startRuntimeListener(): void {
 		chrome.runtime.onMessage.addListener((request): void => {
-			$.ajax({
-				url: env.server_url,
-				type: 'POST',
-				data: JSON.stringify({message: request.message}),
-				contentType: 'application/json',
-				success: (value: number): void => {
-					this.validateSetAndRender(value);
-				},
-			});
+			if (request.message) {
+				$.ajax({
+					url: env.server_url,
+					type: 'POST',
+					data: JSON.stringify({message: request.message}),
+					contentType: 'application/json',
+					success: (value: number): void => {
+						this.validateSetAndRender(value);
+					},
+				});
+			}
 		});
 	}
 
@@ -77,3 +79,7 @@ class Dashboard {
 
 const dashboard = new Dashboard(16);
 dashboard.start();
+
+chrome.runtime.onMessage.addListener(request => {
+	console.log('Received message', request);
+});

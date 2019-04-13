@@ -3,8 +3,9 @@ import {SimpleAudioRecorder} from './simple-audio-recorder';
 
 export class SplittingAudioRecorder implements AudioRecorder {
 
-	private audioRecorder: AudioRecorder;
+	private proxiedRecorder: AudioRecorder;
 	private timeoutHandler: number;
+	private blobListener: (b: Blob) => void;
 
 	constructor(
 		private element: HTMLVideoElement,
@@ -17,8 +18,14 @@ export class SplittingAudioRecorder implements AudioRecorder {
 	}
 
 	private startProxiedRecorder() {
-		this.audioRecorder = new SimpleAudioRecorder(this.element);
-		this.audioRecorder.start();
+		this.proxiedRecorder = new SimpleAudioRecorder(this.element);
+		this.proxiedRecorder.setBlobListener(blob => {
+			if (this.blobListener) {
+				this.blobListener(blob);
+			}
+		});
+
+		this.proxiedRecorder.start();
 
 		this.timeoutHandler = setTimeout(() => {
 			this.stopProxiedRecorder();
@@ -32,6 +39,10 @@ export class SplittingAudioRecorder implements AudioRecorder {
 	}
 
 	private stopProxiedRecorder() {
-		this.audioRecorder.stop();
+		this.proxiedRecorder.stop();
+	}
+
+	setBlobListener(fn: (b: Blob) => void) {
+		this.blobListener = fn;
 	}
 }
