@@ -12,6 +12,7 @@ export class Scrapper {
 		'#article',
 		'#article_wrapper', // wiadomosci.gazeta.pl
 		'.article', // sport.pl
+		'.content', // tvnmeteo.tvn24.pl
 	];
 
 	/**
@@ -29,8 +30,10 @@ export class Scrapper {
 		'p',
 		'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
 		'blockquote',
+		'ul',
 		'#gazeta_article_lead', // wiadomosci.gazeta.pl
 		'.article--lead', // wiadomosci.wp.pl
+		'#lead', // wiadomosci.onet.pl
 	];
 
 	private readonly minTextLength = 1000;

@@ -1,3 +1,8 @@
 .behealthy-highlight {
-	color: red !important;
+	$color: red !important;
+	color: $color;
+
+	* {
+		color: $color;
+	}
 }
