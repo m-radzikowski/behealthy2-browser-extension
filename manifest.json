@@ -33,7 +33,7 @@
 	"options_page": "options.html",
 	"permissions": [
 		"tabs",
-		"<all_urls>",
-		"storage"
+		"storage",
+		"<all_urls>"
 	]
 }
