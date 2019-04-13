@@ -1,24 +1,32 @@
 import $ from 'jquery';
 import {env} from './env';
+import Tab = chrome.tabs.Tab;
 
 export class ScoringManager {
 
 	private value = 0;
+	private history: HistoryItem[] = [];
+
 	private valueListeners: ((value: number) => any)[] = [];
 
 	constructor() {
-		chrome.storage.sync.get(['value'], (data) => {
+		chrome.storage.sync.get(['value', 'history'], (data) => {
 			if (data.value) {
-				this.value = +data.value;
+				this.value = data.value;
 				console.log('Initial scoring value read from storage', this.value);
-				this.notifyValueListeners();
 			}
+			if (data.history) {
+				this.history = data.history;
+				console.log('Initial history read from storage', this.history);
+			}
+
+			this.notifyValueListeners();
 		});
 	}
 
 	start() {
-		chrome.runtime.onMessage.addListener((request): void => {
-			console.log('Received message', request);
+		chrome.runtime.onMessage.addListener((request, sender): void => {
+			console.log('Received message', request, sender);
 
 			let urlPath = null;
 			let data = null;
@@ -40,25 +48,40 @@ export class ScoringManager {
 					data: JSON.stringify(data),
 					contentType: 'application/json',
 					success: (value: number): void => {
-						this.addPoints(value);
+						this.addScore(sender.tab, value);
 					},
 				});
 			}
 		});
 	}
 
-	private addPoints(change: number) {
-		console.log('addPoints', this.value, change);
+	private addScore(tab: Tab, change: number) {
+		console.log('addScore', tab, change);
+
+		if (change === 0) {
+			return;
+		}
+
 		let newValue = this.value + change;
 		newValue = Math.min(100, Math.max(-100, newValue));
+		console.log('Value change: ' + change + ', new value: ' + newValue);
 
-		if (this.value !== newValue) {
-			console.log('Value change: ' + change + ', new value: ' + newValue);
+		this.value = newValue;
 
-			this.value = newValue;
-			chrome.storage.sync.set({value: newValue});
-			this.notifyValueListeners();
-		}
+		const historyItem: HistoryItem = {
+			url: tab.url,
+			title: tab.title,
+			change: change,
+			resultValue: this.value,
+		};
+		this.history.push(historyItem);
+
+		chrome.storage.sync.set({
+			value: this.value,
+			history: this.history,
+		});
+
+		this.notifyValueListeners();
 	}
 
 	private notifyValueListeners() {
@@ -68,4 +91,11 @@ export class ScoringManager {
 	addValueListener(fn: (value: number) => any) {
 		this.valueListeners.push(fn);
 	}
+}
+
+interface HistoryItem {
+	url: string;
+	title: string;
+	change: number;
+	resultValue: number;
 }

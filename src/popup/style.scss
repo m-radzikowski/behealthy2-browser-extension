@@ -2,6 +2,56 @@ body {
 	background: #fafafa;
 }
 
+h1, h2 {
+	text-align: center;
+	margin-bottom: 0;
+}
+
 h1 {
-	font-size: 15px;
+	font-size: 22px;
+}
+
+h2 {
+	font-size: 18px;
+	margin-top: 25px;
+}
+
+a {
+	color: #1a0dab;
+	text-decoration: none;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+#last-pages {
+	margin-top: 5px;
+	padding: 0 10px 0 20px;
+
+	li {
+		list-style-type: none;
+		margin-bottom: 3px;
+	}
+
+	li:before {
+		content: "";
+		border-color: transparent #999;
+		border-style: solid;
+		border-width: 0.35em 0 0.35em 0.45em;
+		display: block;
+		height: 0;
+		width: 0;
+		left: -1em;
+		top: 1em;
+		position: relative;
+	}
+
+	.score-positive {
+		color: #0a0;
+	}
+
+	.score-negative {
+		color: #a00;
+	}
 }
