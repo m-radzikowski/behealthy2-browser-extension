@@ -1,6 +1,6 @@
 import './style.scss';
 
-export class LoadingIndicator {
+export class GaugeIndicator {
 
 	private readonly context: CanvasRenderingContext2D;
 	private readonly width: number;
@@ -26,7 +26,7 @@ export class LoadingIndicator {
 
 	start() {
 		this.render();
-		this.intervalHandle = setInterval(() => this.render(), 5000);
+		this.intervalHandle = setInterval(() => this.render(), 1000);
 	}
 
 	private render(): void {
@@ -78,5 +78,5 @@ export class LoadingIndicator {
 	}
 }
 
-const loadingIndicator = new LoadingIndicator();
-loadingIndicator.start();
+const gaugeIndicator = new GaugeIndicator();
+gaugeIndicator.start();

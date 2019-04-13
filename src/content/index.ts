@@ -5,7 +5,7 @@ import {SplittingAudioRecorder} from './audio/splitting-audio-recorder';
 
 const text = new Scrapper().getPageText();
 if (text) {
-	console.log('SCRAPPED TEXT', text);
+	chrome.runtime.sendMessage({message: text});
 }
 
 let audioRecorder: AudioRecorder = null;
