@@ -1,29 +1,51 @@
 import './hot-reload.ts';
-
-console.log('Log from background page');
+import $ from 'jquery';
+import {env} from './env';
 
 // To have browser action click working, remove browser action popup from the manifest.
-chrome.browserAction.onClicked.addListener(function (tab) {
-	console.log('Browser action clicked');
-});
+// chrome.browserAction.onClicked.addListener(function (tab) {
+// 	console.log('Browser action clicked');
+// });
 
 // chrome.browserAction.setIcon({path:'icon.svg'});
 
-class DashboardIcon {
+class Dashboard {
 	private value = 0;
 	private context: CanvasRenderingContext2D;
 	private intervalHandle: number;
+
 	constructor(private size: number) {
 		this.context = document.createElement('canvas').getContext('2d');
 	}
 
 	start() {
 		this.render();
+		this.startRuntimeListener();
 		this.intervalHandle = setInterval(() => this.render(), 10000);
 	}
 
+	private startRuntimeListener(): void {
+		chrome.runtime.onMessage.addListener((request): void => {
+			$.ajax({
+				url: env.server_url,
+				type: 'POST',
+				data: JSON.stringify({message: request.message}),
+				contentType: 'application/json',
+				success: (value: number): void => {
+					this.validateSetAndRender(value);
+				},
+			});
+		});
+	}
+
+	private validateSetAndRender(value: number): void {
+		this.value += value;
+		this.value = this.value > 100 ? 100 : this.value;
+		this.value = this.value < -100 ? -100 : this.value;
+		this.render();
+	}
+
 	private render(): void {
-		this.value = (Math.random() * 200) - 100; // to be taken from api
 		window.localStorage.setItem('mood', this.value.toString());
 		const color: string = this.getColor();
 		this.context.save();
@@ -41,15 +63,15 @@ class DashboardIcon {
 
 	private getColor(): string {
 		switch (true) {
-			case (this.value < -77):
+			case (this.value < -76):
 				return '#FD200D';
-			case (this.value < -55):
+			case (this.value < -54):
 				return '#FF7300';
-			case (this.value < -25):
+			case (this.value < -24):
 				return '#FEB101';
-			case (this.value < 0):
+			case (this.value < 1):
 				return '#F3EE01';
-			case (this.value < 60):
+			case (this.value < 59):
 				return '#ABD900';
 			default:
 				return '#01A800';
@@ -57,5 +79,5 @@ class DashboardIcon {
 	}
 }
 
-const dashboardIcon = new DashboardIcon(16);
-dashboardIcon.start();
+const dashboard = new Dashboard(16);
+dashboard.start();
