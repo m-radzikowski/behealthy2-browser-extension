@@ -55,12 +55,12 @@ export class SimpleAudioRecorder implements AudioRecorder {
 
 		// TODO Return blob
 
-		const url = window.URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = 'audio';
-		a.click();
-		window.URL.revokeObjectURL(url);
+		// const url = window.URL.createObjectURL(blob);
+		// const a = document.createElement('a');
+		// a.href = url;
+		// a.download = 'audio';
+		// a.click();
+		// window.URL.revokeObjectURL(url);
 	}
 
 	private onWarning(e) {
