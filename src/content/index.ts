@@ -5,7 +5,7 @@ import {SplittingAudioRecorder} from './audio/splitting-audio-recorder';
 
 const text = new Scrapper().getPageText();
 if (text) {
-	chrome.runtime.sendMessage({message: text});
+	chrome.runtime.sendMessage({action: 'text', message: text});
 }
 
 let audioRecorder: AudioRecorder = null;
@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener(message => {
 				fileReader.readAsDataURL(blob);
 				fileReader.onloadend = () => {
 					const base64data = fileReader.result;
-					chrome.runtime.sendMessage({'audio': base64data});
+					chrome.runtime.sendMessage({action: 'audio', audio: base64data});
 				};
 			});
 			audioRecorder.start();

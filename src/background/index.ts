@@ -22,11 +22,26 @@ class Dashboard {
 
 	private startRuntimeListener(): void {
 		chrome.runtime.onMessage.addListener((request): void => {
-			if (request.message) {
+			console.log('Received message', request);
+
+			let urlPath = null;
+			let data = null;
+			switch (request.action) {
+				case 'text':
+					urlPath = 'witai/sentiment';
+					data = {message: request.message};
+					break;
+				case 'audio':
+					urlPath = 'audio/mood';
+					data = {audio: request.audio};
+					break;
+			}
+
+			if (urlPath && data) {
 				$.ajax({
-					url: env.server_url,
+					url: env.server_url + urlPath,
 					type: 'POST',
-					data: JSON.stringify({message: request.message}),
+					data: JSON.stringify(data),
 					contentType: 'application/json',
 					success: (value: number): void => {
 						this.validateSetAndRender(value);
@@ -79,7 +94,3 @@ class Dashboard {
 
 const dashboard = new Dashboard(16);
 dashboard.start();
-
-chrome.runtime.onMessage.addListener(request => {
-	console.log('Received message', request);
-});
