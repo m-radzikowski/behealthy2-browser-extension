@@ -34,6 +34,7 @@ class Dashboard {
 				success: (value: number): void => {
 					this.validateSetAndRender(value);
 				},
+				timeout: 60000
 			});
 		});
 	}
