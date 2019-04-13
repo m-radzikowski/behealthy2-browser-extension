@@ -1,96 +1,12 @@
 import './hot-reload.ts';
 import {AudioRecordManager} from './audio-record-manager';
-import $ from 'jquery';
-import {env} from './env';
+import {ScoringManager} from './scoring-manager';
+import {ActionIconRenderer} from './action-icon-renderer';
 
 AudioRecordManager.getInstance().init();
 
-class Dashboard {
-	private value = 0;
-	private context: CanvasRenderingContext2D;
-	private intervalHandle: number;
+const scoringManager = new ScoringManager();
+scoringManager.start();
 
-	constructor(private size: number) {
-		this.context = document.createElement('canvas').getContext('2d');
-	}
-
-	start() {
-		this.render();
-		this.startRuntimeListener();
-		this.intervalHandle = setInterval(() => this.render(), 10000);
-	}
-
-	private startRuntimeListener(): void {
-		chrome.runtime.onMessage.addListener((request): void => {
-			console.log('Received message', request);
-
-			let urlPath = null;
-			let data = null;
-			switch (request.action) {
-				case 'text':
-					urlPath = 'witai/sentiment';
-					data = {message: request.message};
-					break;
-				case 'audio':
-					urlPath = 'audio/mood';
-					data = {audio: request.audio};
-					break;
-			}
-
-			if (urlPath && data) {
-				$.ajax({
-					url: env.server_url + urlPath,
-					type: 'POST',
-					data: JSON.stringify(data),
-					contentType: 'application/json',
-					success: (value: number): void => {
-						this.validateSetAndRender(value);
-					},
-				});
-			}
-		});
-	}
-
-	private validateSetAndRender(value: number): void {
-		this.value += value;
-		this.value = this.value > 100 ? 100 : this.value;
-		this.value = this.value < -100 ? -100 : this.value;
-		this.render();
-	}
-
-	private render(): void {
-		window.localStorage.setItem('mood', this.value.toString());
-		const color: string = this.getColor();
-		this.context.save();
-		this.context.clearRect(0, 0, this.size, this.size);
-		this.context.fillStyle = color;
-		this.context.arc(this.size / 2, this.size / 2, this.size / 2, 0, 2 * Math.PI);
-		this.context.stroke();
-		this.context.fill();
-		const imageData = this.context.getImageData(0, 0, this.size, this.size);
-		chrome.browserAction.setIcon({
-			imageData: imageData
-		});
-		this.context.restore();
-	}
-
-	private getColor(): string {
-		switch (true) {
-			case (this.value < -76):
-				return '#FD200D';
-			case (this.value < -54):
-				return '#FF7300';
-			case (this.value < -24):
-				return '#FEB101';
-			case (this.value < 1):
-				return '#F3EE01';
-			case (this.value < 59):
-				return '#ABD900';
-			default:
-				return '#01A800';
-		}
-	}
-}
-
-const dashboard = new Dashboard(16);
-dashboard.start();
+const actionIconRenderer = new ActionIconRenderer(16);
+scoringManager.addValueListener(value => actionIconRenderer.updateValue(value));
