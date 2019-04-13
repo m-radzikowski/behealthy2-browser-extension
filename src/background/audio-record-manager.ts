@@ -26,7 +26,13 @@ export class AudioRecordManager {
 
 	private listenTabUpdates() {
 		chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-			const audible = changeInfo.audible;
+			let audible = changeInfo.audible;
+
+			// set audible status when page loading is completed, as previous message were sent to soon to be read
+			if (changeInfo.status === 'complete') {
+				audible = tab.audible;
+			}
+
 			if (audible === undefined) {
 				return;
 			}
@@ -41,21 +47,11 @@ export class AudioRecordManager {
 
 	private startRecording(tab: Tab) {
 		console.log('Starting audio recording', tab);
-		console.log('tab active', tab.active);
-
-		chrome.tabCapture.capture({audio: true}, stream => {
-			// let startTabId;
-			// chrome.tabs.query({active: true, currentWindow: true}, (tabs) => startTabId = tabs[0].id);
-			const audioCtx = new AudioContext();
-			console.log(stream);
-			const source = audioCtx.createMediaStreamSource(stream);
-			const mediaRecorder = new MediaRecorder(source);
-			console.log(mediaRecorder);
-			// const mediaRecorder = new Recorder(source);
-		});
+		chrome.tabs.sendMessage(tab.id, {action: 'start-recording'});
 	}
 
 	private stopRecording(tab: Tab) {
 		console.log('Stopping audio recording', tab);
+		chrome.tabs.sendMessage(tab.id, {action: 'stop-recording'});
 	}
 }

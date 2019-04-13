@@ -6,60 +6,84 @@ if (text) {
 	console.log('SCRAPPED TEXT', text);
 }
 
-window.addEventListener('load', function () {
-	const video = document.getElementsByTagName('video')[0];
-	console.log(video);
+let audioRecorder: AudioRecorder = null;
 
-	const videoStream = video.captureStream();
-	console.log('video stream', videoStream);
+chrome.runtime.onMessage.addListener(message => {
+	switch (message.action) {
+		case 'start-recording':
+			const video = document.getElementsByTagName('video')[0];
+			audioRecorder = new AudioRecorder(video);
+			audioRecorder.start();
+			break;
+		case 'stop-recording':
+			if (audioRecorder) {
+				audioRecorder.stop();
+			}
+			break;
+	}
+});
 
-	const sourceNode = new AudioContext().createMediaStreamSource(videoStream);
-	console.log(sourceNode);
-	console.log(sourceNode.mediaStream);
-	console.log(sourceNode.mediaStream.getAudioTracks()[0]);
+declare var MediaRecorder: any;
 
-	sourceNode.mediaStream.getVideoTracks().forEach(videoTrack =>
-		sourceNode.mediaStream.removeTrack(videoTrack)
-	);
+export class AudioRecorder {
 
-	const mediaRecorder = new MediaRecorder(sourceNode.mediaStream);
-	console.log(mediaRecorder);
+	private element: HTMLVideoElement;
+	private mediaRecorder;
+	private chunks = [];
 
-	mediaRecorder.start();
+	constructor(element: HTMLVideoElement) {
+		this.element = element;
+	}
 
-	let chunks = [];
+	start() {
+		// @ts-ignore
+		const videoStream = this.element.captureStream();
+		const sourceNode = new AudioContext().createMediaStreamSource(videoStream);
 
-	mediaRecorder.ondataavailable = function (e) {
-		console.log('media data', e);
-		chunks.push(e.data);
-	};
-	mediaRecorder.onerror = function (e) {
-		console.log('Error: ', e);
-	};
-	mediaRecorder.onstart = function () {
-		console.log('Started, state = ' + mediaRecorder.state);
-	};
-	mediaRecorder.onstop = function () {
-		console.log('Stopped, state = ' + mediaRecorder.state);
-		const blob = new Blob(chunks, {
+		sourceNode.mediaStream.getVideoTracks().forEach(videoTrack =>
+			sourceNode.mediaStream.removeTrack(videoTrack)
+		);
+
+		this.mediaRecorder = new MediaRecorder(sourceNode.mediaStream);
+		console.log(this.mediaRecorder);
+
+		this.mediaRecorder.onstart = () => this.onStart();
+		this.mediaRecorder.ondataavailable = (e) => this.onDataAvailable(e);
+		this.mediaRecorder.onstop = () => this.onStop();
+		this.mediaRecorder.onwarning = (e) => this.onWarning(e);
+		this.mediaRecorder.onerror = (e) => this.onError(e);
+
+		this.mediaRecorder.start();
+	}
+
+	stop() {
+		this.mediaRecorder.stop();
+	}
+
+	private onStart() {
+		console.log('Audio recording started');
+	}
+
+	private onDataAvailable(event) {
+		this.chunks.push(event.data);
+	}
+
+	private onStop() {
+		console.log('Audio recording stopped');
+
+		const blob = new Blob(this.chunks, {
 			type: 'audio/webm',
 		});
-		chunks = [];
-
 		console.log(blob);
 
-		const url = window.URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = 'audio';
-		a.click();
-		window.URL.revokeObjectURL(url);
-	};
-	mediaRecorder.onwarning = function (e) {
-		console.log('Warning: ' + e);
-	};
+		// TODO Return blob
+	}
 
-	setTimeout(function () {
-		mediaRecorder.stop();
-	}, 4000);
-});
+	private onWarning(e) {
+		console.log('Media Recorder warning', e);
+	}
+
+	private onError(e) {
+		console.log('Media Recorder error', e);
+	}
+}
