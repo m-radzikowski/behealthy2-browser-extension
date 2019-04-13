@@ -30,10 +30,6 @@ export class LoadingIndicator {
 		this.intervalHandle = setInterval(() => this.render(), 1000);
 	}
 
-	stop() {
-		clearInterval(this.intervalHandle);
-	}
-
 	private render(): void {
 		this.context.lineCap = 'square';
 		this.context.font = '24px verdana';
@@ -47,7 +43,6 @@ export class LoadingIndicator {
 	}
 
 	drawGuage(value: number): void {
-		console.log('reading healthy value: ', value);
 		this.context.clearRect(0, 0, this.width, this.height);
 		const PI = Math.PI;
 		const PI2 = PI * 2;
@@ -85,4 +80,3 @@ export class LoadingIndicator {
 
 const loadingIndicator = new LoadingIndicator();
 loadingIndicator.start();
-setTimeout(() => loadingIndicator.stop(), 15000);
