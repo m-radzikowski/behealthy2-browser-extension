@@ -26,7 +26,7 @@ export class LoadingIndicator {
 		clearInterval(this.intervalHandle);
 	}
 
-	private render() {
+	private render(): void {
 		this.context.lineCap = 'square';
 		this.context.font = '24px verdana';
 		this.context.textAlign = 'center';
@@ -34,18 +34,23 @@ export class LoadingIndicator {
 		this.context.fillStyle = 'black';
 
 		this.context.restore();
-		this.drawGuage(10);
+		const randomNumber = (Math.random() * 200) - 100;
+		this.drawGuage(randomNumber);
 	}
 
-	drawGuage(percent) {
-		console.log('reading healthy value: ', percent);
+	drawGuage(value: number): void {
+		console.log('reading healthy value: ', value);
+		this.context.clearRect(0, 0, this.width, this.height);
 		const PI = Math.PI;
 		const PI2 = PI * 2;
 		const cx = this.width / 2;
-		const cy = this.height / 2;
+		const cy = this.height - 10;
 		const r = this.width / 3;
 		const min = PI;
 		const max = PI2;
+		const valueRadinas = min + (value + 100) / 200 * PI;
+		const xPointer = cx + r * Math.cos(valueRadinas);
+		const yPointer = cy + r * Math.sin(valueRadinas);
 
 		// draw full gauge outline
 		this.context.beginPath();
@@ -54,7 +59,6 @@ export class LoadingIndicator {
 		this.context.lineWidth = this.gaugeStroke;
 		this.context.stroke();
 		for (let i = 0; i <= this.colorsSet.length; i++) {
-			console.log(PI);
 			const moveAngel = i > 0 ? min * i * PI / 23 : 0;
 			this.context.beginPath();
 			this.context.arc(cx, cy, r, min + moveAngel, max);
@@ -62,9 +66,15 @@ export class LoadingIndicator {
 			this.context.lineWidth = this.gaugeStroke - this.gaugeStroke / 20;
 			this.context.stroke();
 		}
+		this.context.beginPath();
+		this.context.strokeStyle = 'black';
+		this.context.moveTo(cx, cy);
+		this.context.lineTo(xPointer, yPointer);
+		this.context.lineWidth = 5;
+		this.context.stroke();
 	}
 }
 
 const loadingIndicator = new LoadingIndicator();
 loadingIndicator.start();
-setTimeout(() => loadingIndicator.stop(), 5000);
+setTimeout(() => loadingIndicator.stop(), 15000);
