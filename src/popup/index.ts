@@ -54,8 +54,6 @@ export class LoadingIndicator {
 		const valueRadinas = min + (value + 100) / 200 * PI;
 		const xPointer = cx + r * Math.cos(valueRadinas);
 		const yPointer = cy + r * Math.sin(valueRadinas);
-
-		// draw full gauge outline
 		this.context.beginPath();
 		this.context.arc(cx, cy, r, min, max);
 		this.context.strokeStyle = 'black';
