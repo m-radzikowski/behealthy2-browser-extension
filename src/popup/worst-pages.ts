@@ -13,7 +13,7 @@ export class WorstPages {
 				history = history.sort((a, b) => a.change - b.change);
 				for (let i = 0; i < 3; i++) {
 					const item = history[i];
-					const title = item.title.substr(0, 35) + '...';
+					const title = item.title.substr(0, 30) + '...';
 					const score = Math.round(item.change);
 					const scoreClass = score > 0 ? 'score-positive' : 'score-negative';
 					$(this.element).append(`
