@@ -101,6 +101,9 @@ export class GaugeIndicator {
 				let history = historyData.history as HistoryItem[];
 				const newData: number[] = [];
 				const newLabels: string[] = [];
+				if (history.length > 20) {
+					history = history.slice(history.length - 20, history.length - 1);
+				}
 				history.forEach((historyItem: HistoryItem): void => {
 					newData.push(historyItem.resultValue);
 					newLabels.push(historyItem.title);
