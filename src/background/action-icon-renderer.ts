@@ -20,6 +20,12 @@ export class ActionIconRenderer {
 		this.context.fillStyle = color;
 		this.context.arc(this.size / 2, this.size / 2, this.size / 2, 0, 2 * Math.PI);
 		this.context.fill();
+
+		this.context.fillStyle = '#fff';
+		this.context.font = 'bold 10px Arial';
+		this.context.fillText('M', 4, 12);
+		this.context.fillRect(0, 13, 16, 1);
+
 		const imageData = this.context.getImageData(0, 0, this.size, this.size);
 		chrome.browserAction.setIcon({
 			imageData: imageData
@@ -36,7 +42,7 @@ export class ActionIconRenderer {
 			case (this.value < -24):
 				return '#FEB101';
 			case (this.value < 1):
-				return '#F3EE01';
+				return '#E8E300';
 			case (this.value < 59):
 				return '#ABD900';
 			default:
