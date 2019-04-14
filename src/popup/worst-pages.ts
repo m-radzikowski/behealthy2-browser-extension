@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import {HistoryItem} from './history-item';
 
 export class WorstPages {
 
