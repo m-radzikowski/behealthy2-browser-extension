@@ -2,6 +2,7 @@ import './hot-reload.ts';
 import {AudioRecordManager} from './audio-record-manager';
 import {ScoringManager} from './scoring-manager';
 import {ActionIconRenderer} from './action-icon-renderer';
+import {PositiveCacher} from './positive-cacher';
 
 AudioRecordManager.getInstance().init();
 
@@ -14,3 +15,5 @@ scoringManager.addValueListener(value => {
 
 const actionIconRenderer = new ActionIconRenderer(16);
 scoringManager.addValueListener(value => actionIconRenderer.updateValue(value));
+
+new PositiveCacher().start();
