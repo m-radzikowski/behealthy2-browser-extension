@@ -2,7 +2,7 @@ body {
 	background: #fafafa;
 }
 
-h1, h2 {
+h1, h2, h3 {
 	text-align: center;
 	margin-bottom: 0;
 }
@@ -14,6 +14,13 @@ h1 {
 h2 {
 	font-size: 18px;
 	margin-top: 25px;
+}
+
+h3 {
+	font-size: 13px;
+	color: #666;
+	font-weight: normal;
+	margin-top: 2px;
 }
 
 a {
@@ -54,4 +61,13 @@ ul {
 
 .score-negative {
 	color: #a00;
+}
+
+#mood-gauge {
+	margin-bottom: -20px;
+	margin-top: 5px;
+}
+
+#history-chart {
+	margin-top: 10px;
 }
