@@ -17,8 +17,8 @@ export class GaugeIndicator {
 		'#FF7300',
 		'#FEB101',
 		'#F3EE01',
-		'#ABD900',
-		'#ABD900',
+		'#E8E300',
+		'#E8E300',
 		'#01A800'
 	];
 	private data: any = {
