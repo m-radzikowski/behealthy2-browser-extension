@@ -33,7 +33,7 @@ export class GaugeIndicator {
 
 	constructor(gaugeCanvas: HTMLCanvasElement, chartCanvas: HTMLCanvasElement) {
 		this.width = gaugeCanvas.width;
-		this.height = gaugeCanvas.height;
+		this.height = gaugeCanvas.height - 20;
 		this.gaugeContext = gaugeCanvas.getContext('2d');
 		this.canvasChartElem = <HTMLCanvasElement>document.getElementById('history-chart');
 		this.chartContext = chartCanvas.getContext('2d');
@@ -105,7 +105,7 @@ export class GaugeIndicator {
 					history = history.slice(history.length - 20, history.length - 1);
 				}
 				history.forEach((historyItem: HistoryItem): void => {
-					newData.push(historyItem.resultValue);
+					newData.push(Math.round(historyItem.resultValue));
 					newLabels.push(historyItem.title);
 				});
 				const gradientStroke = this.chartContext.createLinearGradient(0, 0, 280, 0);
