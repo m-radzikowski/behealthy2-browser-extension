@@ -1,4 +1,4 @@
-interface HistoryItem {
+export interface HistoryItem {
 	url: string;
 	title: string;
 	change: number;
